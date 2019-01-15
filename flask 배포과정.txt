@@ -1,0 +1,89 @@
+[[ 사전 조치 ]]
+1. EC2에 생성한 서버를 잡고 우클릭
+2. 연결 > 연결정보창을 띠워놓고
+
+[[ 맥유저 ]]
+1. 터미널 오픈
+2. cd pem파일이 위치한 경로
+ > cd C:\Users\student\Desktop\aws
+3. 퍼미션 조정
+ > chmod 400 gemoney.pem 
+4. 접속
+ > ssh -i "gemoney.pem" ubuntu@ec2-13-209-69-38.ap-northeast-2.compute.amazonaws.com
+ > yes
+
+[[ 윈도우 유저 ]]
+1. putty.exe, puttyGen.exe 파일 다운로드
+2. puttyGen.exe > LOAD 클릭 > ***.pem 선택 (*.*선택) 
+   > save private key > ***.ppk 이름으로 저장
+3. putty.exe 실행
+   > host name 항목 기입
+     ubuntu@ec2-13-125-181-222.ap-northeast-2.compute.amazonaws.com
+   > 세션이름 설정후 (ex) aws) > save
+   > conecction > ssh > auth > C:\Users\student\Desktop\aws\gemoney.ppk
+     설정
+   > session > save
+   > open > 예 > 
+
+[[ 우분트 리눅스에서 flask로 만든 서비스 배포 밑 운영 ]]
+1.버전 확인
+ ubuntu> cat /etc/issue
+   : Ubuntu 18.04.1 LTS \n \l
+2.파이썬 버전 확인
+ ubuntu> python3 --version
+   : Python 3.6.5
+
+3.프로그램 설치
+ - root 권한 획득 
+  ubuntu> sudo su
+ - 권한을 빠져 나간다 => root 로그아웃
+  root> exit
+ - 현재프럼프트는 
+  ubuntu>
+ - ubuntu 계정에서 root 권한 명령으로 뭔가 하고 싶으면 (관리자 권한 실행)
+  ubuntu>sudo apt-get update 
+  ubuntu>sudo apt-get upgrade
+  ubuntu>sudo apt-get install python3-pip python3-dev nginx
+  ( nginx는 웹서버임 ( apache, ngninx 등등 ) )
+
+ - 가상환경구축 -> virtualenv 설치
+  >sudo pip3 install virtualenv
+ - 가상환경을 만들 디렉토리
+  디렉토리 생성
+  >mkdir ~/flasksvr
+  디렉토리 이동
+  >cd ~/flasksvr
+  가상환경 생성
+  >virtualenv -p python3 flasksvrenv
+  가상환경 활성화
+  >source flasksvrenv/bin/activate
+  (flasksvrenv) ubuntu#~...$ 
+
+ - Fileziller를 이용하여 ftp 접속 및 파일 업로드 처리 가능
+   디렉토리 구조나 퍼미션 정보도 같이 볼수 있다
+  > 구글>검색>다운로드(프리버전)>설치 
+  > /home/ubuntu/flasksvr 밑에 flask_ex.tar 파일 업로드(드레그)
+ 
+ - 현재 설치 목록
+  ()>pip list
+  uwsgi => 운영관련 모듈
+  ()>pip install flask uwsgi
+  현재 위치 확인
+  ()> ls
+  파일 생성 -> 편집 -> vi, nano, vim등등 
+  ()> nano run.py
+  ------------------------
+    from flask import Flask
+
+    app = Flask(__name__)
+
+    @app.route('/')
+    def home():
+        return "<h1>Hi Flask</h1>"
+
+    if __name__ == '__main__':
+        app.run(host='0.0.0.0')  
+  ------------------------
+  포트 5000번 오픈하고 실행
+  ()>sudo ufw allow 5000
+  ()>python run.py
