@@ -1,0 +1,16 @@
+[푸티를 종료하고도 소켓을 받아서 서버가 종료되지 않음]
+
+~/flasksvr>nano flasksvr.ini
+
+[uwsgi] 추가>저장>나오기
+
+~/flasksvr>sudo systemctl restart flasksvr
+
+~/flasksvr>sudo systemctl restart nginx
+
+================================================
+브라우저 오픈
+
+주소창에 자기 아이피 엔터
+
+putty 창 닫고 확인

@@ -114,6 +114,7 @@
 5. 서비스 구성을 위한 작업
  > nano ~/flasksvr/flasksvr.ini
 --------------------------------------------
+[uwsgi]
 module = wsgi:app
 
 master = true
