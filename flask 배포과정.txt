@@ -102,18 +102,18 @@
      app.run()
  ------------------------------
  
- - 구동(단독구동시)
+ - 구동 (단독구동시)
  ()> uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi:app
 
  - flask 서버종료
  ()> ctrl + c
- 
+
  - 가상환경 나오기
  ()> deactivate
 
 5. 서비스 구성을 위한 작업
-> nano flasksvr.ini
------------------------------------------------------------------
+ > nano ~/flasksvr/flasksvr.ini
+--------------------------------------------
 module = wsgi:app
 
 master = true
@@ -124,14 +124,14 @@ chmod-socket = 660
 vacuum = true
 
 die-on-term = true
------------------------------------------------------------------
+-------------------------------------------
 
-- systemd unit file 생성
-  server 부팅될 때 자동으로 uwsgi가 가동되서 서버가 정상운영된다.
-> sudo nano /etc/systemd/system/flasksvr.service
-----------------------------------------------------------------
+ - systemd unit file  생성
+   server 부팅될때 자동으로 uwsgi가 가동되서 서버가 정상운영된
+ > sudo nano /etc/systemd/system/flasksvr.service
+ ----------------------------------------------------------
 [Unit]
-Description=uWSGI instance server
+Description=uWSGI instance to serve flasksvr
 After=network.target
 
 [Service]
@@ -139,38 +139,51 @@ User=ubuntu
 Group=www-data
 WorkingDirectory=/home/ubuntu/flasksvr
 Environment="PATH=/home/ubuntu/flasksvr/flasksvrenv/bin"
-ExecStart=/home/ubuntu/flasksvr/flasksvrenv/bin/uwsgi --ini flask.ini
+ExecStart=/home/ubuntu/flasksvr/flasksvrenv/bin/uwsgi --ini flasksvr.ini
 
 [Install]
 WantedBy=multi-user.target
------------------------------------------------------------------
+ ----------------------------------------------------------
+ - 실행 및 활성화
+ > sudo systemctl start flasksvr
+ > sudo systemctl enable flasksvr
 
-- 실행 및 활성화
-> sudo systemctl start flasksvr
-> sudo systemctl enable flasksvr
+ - nginx 연동처리
+ > sudo nano /etc/nginx/sites-available/flasksvr
+----------------------------------------------------
+server {
+  listen 80;
+  server_name 13.209.69.38;
 
-- nginx 연동처리
-> sudo nano /etc/nginx/sites-available/flasksvr
------------------------------------------------------------------
-server{
-    listen 80;
-    server_name 13.125.249.141;
-
-    location / {
-        include uwsgi_params;
-        uwsgi_pass unix:///home/ubuntu/flasksvr/flasksvr.sock
-    }
+  location / {
+    include uwsgi_params;
+    uwsgi_pass unix:///home/ubuntu/flasksvr/flasksvr.sock;
+  }
 }
------------------------------------------------------------------
- - 링크 설정
- > sudo ln -s /etc/nginx/sites-available/flasksvr /etc/nginx/sites-enabled
+----------------------------------------------------
+  - 링크설정
+  > sudo ln -s /etc/nginx/sites-available/flasksvr /etc/nginx/sites-enabled
 
- - 설정에 대한 문법체크
+ - 설정에대한문법체크
   > sudo nginx -t
 
- - nginx 재가동
+ - nginx 재가동 
   > sudo systemctl restart nginx
 
- - 5000 포트 닫고, nginx server에 접속허용
+ - 5000포트닫고, nginx sevrer 접속허용
   > sudo ufw delete allow 5000
   > sudo ufw allow 'Nginx Full'
+ 
+ - 서비스로그 확인
+ > systemctl -l status flasksvr
+ 
+ - 코드수정후명령
+ > sudo systemctl restart flasksvr
+ 
+ - nginx log
+ > tail -f /var/log/nginx/error.log
+
+ ========================================================================
+ = 내가 만든 프로젝트 배포
+  - flask_ex.tar는 FTP로 업로드
+  > tar -xvf flask_ex.tar
