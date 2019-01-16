@@ -1,0 +1,27 @@
+kakao REST API 키
+REST API 키
+d26531d99dab675c66034971e16565c7
+
+NAVER
+client ID
+XevQvs1sa3UGxrTDEDoj
+
+Client Secret
+oqOQRsUeI2
+
+API 방식
+kakao api
+naver api
+
+request+bs4 방식
+네이버평점
+https://movie.naver.com/movie/sdb/rank/rmovie.nhn?sel=cur&tg=0&date=20050207
+네이버환율
+https://finance.naver.com/marketindex/?tabSel=exchange#tab_section
+
+selenium 방식
+국내주유가격
+http://www.opinet.co.kr/searRgSelect.do
+
+유투브
+https://www.youtube.com/
