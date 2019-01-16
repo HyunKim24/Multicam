@@ -73,17 +73,17 @@
   파일 생성 -> 편집 -> vi, nano, vim등등 
   ()> nano run.py
   ------------------------
-    from flask import Flask
+from flask import Flask
 
-    app = Flask(__name__)
+app = Flask(__name__)
 
-    @app.route('/')
-    def home():
-        return "<h1>Hi Flask</h1>"
+@app.route('/')
+def home():
+    return "<h1>Hi Flask</h1>"
 
-    if __name__ == '__main__':
-        app.run(host='0.0.0.0')  
-  ------------------------
+if __name__ == '__main__':
+    app.run(host='0.0.0.0')  
+------------------------
   포트 5000번 오픈하고 실행
   ()>sudo ufw allow 5000
   ()>python run.py
@@ -97,9 +97,9 @@
  - entry point 생성(진입로-> 서버의 시작점)
  ()>nano ~/flasksvr/wsgi.py
  ------------------------------
- from run import app
- if __name__ == '__main__':
-     app.run()
+from run import app
+if __name__ == '__main__':
+    app.run()
  ------------------------------
  
  - 구동 (단독구동시)
@@ -154,7 +154,7 @@ WantedBy=multi-user.target
 ----------------------------------------------------
 server {
   listen 80;
-  server_name 13.209.69.38;
+  server_name 13.209.98.188;
 
   location / {
     include uwsgi_params;
@@ -184,7 +184,7 @@ server {
  - nginx log
  > tail -f /var/log/nginx/error.log
 
- ========================================================================
- = 내가 만든 프로젝트 배포
-  - flask_ex.tar는 FTP로 업로드
-  > tar -xvf flask_ex.tar
+==========================================================================
+= 내가만든프로젝트 배포
+ - flask_ex.tar는  FTP로 업로드
+ > tar -xvf flask_ex.tar

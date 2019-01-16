@@ -1,0 +1,125 @@
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install python3-pip python3-dev nginx
+sudo pip3 install virtualenv
+mkdir ~/flasksvr
+cd ~/flasksvr
+virtualenv -p python3 flasksvrenv
+source flasksvrenv/bin/activate
+pip list
+pip install flask uwsgi
+------------------------
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "<h1>Hi Flask</h1>"
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0')  
+------------------------
+sudo ufw allow 5000
+python run.py
+
+# 엔트리 포인트로 구동
+nano ~/flasksvr/wsgi.py
+------------------------------
+from run import app
+if __name__ == '__main__':
+    app.run()
+------------------------------
+uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi:app
+deactivate
+
+# 서비스를 올리고, nginx연동
+nano ~/flasksvr/flasksvr.ini
+--------------------------------------------
+[uwsgi]
+module = wsgi:app
+
+master = true
+processes = 5
+
+socket = flasksvr.sock
+chmod-socket = 660
+vacuum = true
+
+die-on-term = true
+-------------------------------------------
+sudo nano /etc/systemd/system/flasksvr.service
+----------------------------------------------------------
+[Unit]
+Description=uWSGI instance to serve flasksvr
+After=network.target
+
+[Service]
+User=ubuntu
+Group=www-data
+WorkingDirectory=/home/ubuntu/flasksvr
+Environment="PATH=/home/ubuntu/flasksvr/flasksvrenv/bin"
+ExecStart=/home/ubuntu/flasksvr/flasksvrenv/bin/uwsgi --ini flasksvr.ini
+
+[Install]
+WantedBy=multi-user.target
+---------------------------------------------------------
+sudo systemctl start flasksvr
+sudo systemctl enable flasksvr
+sudo nano /etc/nginx/sites-available/flasksvr
+----------------------------------------------------
+server {
+  listen 80;
+  server_name 13.209.98.188;
+
+  location / {
+    include uwsgi_params;
+    uwsgi_pass unix:///home/ubuntu/flasksvr/flasksvr.sock;
+  }
+}
+----------------------------------------------------
+sudo ln -s /etc/nginx/sites-available/flasksvr /etc/nginx/sites-enabled
+sudo nginx -t
+sudo systemctl restart nginx
+sudo ufw delete allow 5000
+sudo ufw allow 'Nginx Full'
+=============================================
+- 코드수정후명령
+> sudo systemctl restart flasksvr
+
+- 서비스로그 확인
+> systemctl -l status flasksvr
+
+- nginx 재가동 
+> sudo systemctl restart nginx
+
+- nginx log
+> tail -f /var/log/nginx/error.log
+==============================================
+# 소스 배포 (개발PC에서 개발이 완료된 이후)
+1. 상용디비값및 상용운용 변수들을 조정하여 로컬테스트
+2. 프로젝트 전체를 tar 압축 (리소스들이 많을 경우)
+3. 리눅스 화면 
+  > mkdir src_bak && cd src_bak
+  > flask_ex.tar 업로드(ftp)
+  > tar -xvf flask_ex.tar
+4. 압축푼 프로젝트를 운용쪽에 이동
+  > mv flask_ex ~/flasksvr/flask_ex
+  > pip install -r requirements.txt
+5. wsgi.py을 열어서 app을 flaks_ex/start.py 에서 가져오겠금
+   수정하시오 => 이 행위가 작업의 마무리
+  > nano ~/flasksvr/wsgi.py
+  ------------------------------
+  from run import app # 이 부분 수정
+  if __name__ == '__main__':
+      app.run()
+  ------------------------------
+  수정 이후 (코드 변경시 수행 코드)
+  > sudo systemctl restart flasksvr
+  > sudo systemctl restart nginx
+  브라우저에서 ip/users/login 호출하여 확인 
+  문제가있으면 왜 그런지 로그에서 찾으시오
+6.업데이트 절차 => 향후 git로 관리
+  개발PC 코드 수정 > 로컬 테스트 -> OK -> 해당 부분만 서버 
+  반영(ftp 덮어쓰기) > sudo systemctl restart flasksvr
+  > 서버 확인 (http://13.209.98.188/users/login)

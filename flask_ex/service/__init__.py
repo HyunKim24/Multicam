@@ -1,5 +1,5 @@
 from flask import Flask, request, session, redirect, url_for
-from service.model import initDBHelper, DBManager
+from flask_ex.service.model import initDBHelper, DBManager
 
 def create_app(config_path='resource/config.cfg'):
     app = Flask(__name__)
@@ -20,7 +20,7 @@ def create_app(config_path='resource/config.cfg'):
     return app
 
 def initErrorPage(app):
-    from service.error import not_found
+    from flask_ex.service.error import not_found
     app.register_error_handler(404,not_found)
 
 def initConfig(app,config_path):
@@ -31,7 +31,7 @@ def initConfig(app,config_path):
     # class를 읽어서 객체로부터 환경변수를 획득한다. -> 
     # 직관성, 코드에 적용되어 있다
     # 내 위치가 하위에 있다 하더라도 from을 기술 할 때는 풀경로를 사용한다.
-    from service.config import DBConfig
+    from flask_ex.service.config import DBConfig
     app.config.from_object(DBConfig)
 
     # 로드된 환경 변수 값 확인
@@ -45,9 +45,9 @@ def initConfig(app,config_path):
 def initBlueprint(app):
     # blueprint => 주제별로 페이지를 나눠서 개발이 가능 => controller
     # 회원관리:~/users/login, ~/users/logout, ~/users/signup
-    from service.controller import bp_users, bp_analysis
+    from flask_ex.service.controller import bp_users, bp_analysis
     # 해당 모듈 덩어리채로 메모리에 올라온다 -> 객체가 만들어지듯이 사용에 관계없이
-    from service.controller import user, ana 
+    from flask_ex.service.controller import user, ana 
     # 블루프린트를 flask 객체에 등록
     app.register_blueprint(bp_users,url_prefix = '/users')
     # 분석관리:~/analysis/init, ~/analysis/proc, ~/analysis/sum
