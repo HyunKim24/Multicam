@@ -20,8 +20,9 @@ https://movie.naver.com/movie/sdb/rank/rmovie.nhn?sel=cur&tg=0&date=20050207
 https://finance.naver.com/marketindex/?tabSel=exchange#tab_section
 
 selenium 방식
+브라우저드라이버 다운로드(크롬)
+> https://sites.google.com/a/chromium.org/chromedriver/downloads
 국내주유가격
-http://www.opinet.co.kr/searRgSelect.do
-
+>http://www.opinet.co.kr/searRgSelect.do
 유투브
-https://www.youtube.com/
+>https://www.youtube.com/

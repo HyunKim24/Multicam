@@ -17,3 +17,12 @@ http://json.parser.online.fr/ json 형식을 보기좋게 해주는 사이트
 (데이터의 구조를 파악하는 데 도움줌)
 
 데이터 분석은 판다스랑 넘파이 땡겨 놓고 시작
+
+Pandas => R 대응해서 만든거
+
+DataFrame => 판다스 데이터 자료 구조형 2차원 매트릭스
+
+DataFrame으로 바꿀때 자동증가 테이블이면 인덱스를 넣지 않아도 됨
+데이터가 들어올 때 알아서 바뀜
+
+iframe html 안에 html
